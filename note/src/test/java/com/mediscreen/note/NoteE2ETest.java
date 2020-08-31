@@ -1,10 +1,10 @@
-package com.mediscreen.patient;
+package com.mediscreen.note;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.mediscreen.patient.entity.Patient;
-import com.mediscreen.patient.manager.PatientManager;
+import com.mediscreen.note.entity.Note;
+import com.mediscreen.note.manager.NoteManager;
 import org.json.JSONObject;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -18,8 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import java.util.Date;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -29,26 +27,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PatientE2ETest {
+public class NoteE2ETest {
     @Autowired
-    PatientManager patientManager;
+    NoteManager noteManager;
 
     @Autowired
     private MockMvc mockMvc;
 
     @LocalServerPort
     private int port;
-    String uri = "patient";
+    String uri = "patHistory/";
 
     @Test
     @Order(1)
     public void createTest() throws Exception {
-        Patient patient = new Patient(1, "TOTO", "TITI", "M", new Date(), "Massy Palaiseau", "08874689" );
+        Note note = new Note(1, "Test Note", 1);
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson=ow.writeValueAsString(patient);
-        MvcResult result = mockMvc.perform(post(createURLWithPort(uri)).contentType(APPLICATION_JSON)
+        String requestJson=ow.writeValueAsString(note);
+        MvcResult result = mockMvc.perform(post(createURLWithPort(uri + "add")).contentType(APPLICATION_JSON)
                 .content(requestJson))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
@@ -56,19 +54,19 @@ public class PatientE2ETest {
         String content = result.getResponse().getContentAsString();
         JSONObject jsonObject = new JSONObject(content);
         assertNotNull(jsonObject);
-        assertEquals(patient.getFirstName(), jsonObject.get("firstName"));
+        assertEquals(note.getIdPatient(), jsonObject.get("idPatient"));
     }
 
     @Test
     @Order(2)
     public void updateTest() throws Exception {
-        Patient patient = patientManager.find(1);
-        patient.setPhone("07070707");
+        Note note = noteManager.find(1);
+        note.setIdPatient(2);
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson=ow.writeValueAsString(patient);
-        MvcResult result = mockMvc.perform(put(createURLWithPort(uri)).contentType(APPLICATION_JSON)
+        String requestJson=ow.writeValueAsString(note);
+        MvcResult result = mockMvc.perform(put(createURLWithPort(uri + "edit")).contentType(APPLICATION_JSON)
                 .content(requestJson))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
@@ -76,8 +74,8 @@ public class PatientE2ETest {
         String content = result.getResponse().getContentAsString();
         JSONObject jsonObject = new JSONObject(content);
         assertNotNull(jsonObject);
-        assertEquals(patient.getPhone(), jsonObject.get("phone"));
-        assertEquals(patient.getId(), jsonObject.get("id"));
+        assertEquals(note.getIdPatient(), jsonObject.get("idPatient"));
+        assertEquals(note.getId(), jsonObject.get("id"));
     }
 
     @Test

@@ -1,0 +1,45 @@
+package com.mediscreen.note.controller;
+
+import com.mediscreen.note.entity.Note;
+import com.mediscreen.note.manager.NoteManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/patHistory")
+public class NoteController {
+    @Autowired
+    NoteManager noteManager;
+
+    @GetMapping
+    public List<Note> findAll(){
+        return noteManager.list();
+    }
+
+    @GetMapping("/{id}")
+    public Note findPatient(@PathVariable int id){
+        return noteManager.find(id);
+    }
+
+    @GetMapping("/patient/{id}")
+    public List<Note> findNoteByPatient(@PathVariable int id){
+        return noteManager.listByPatient(id);
+    }
+
+    @PostMapping("/add/{id}")
+    public Note create(@RequestBody Note note){
+        return noteManager.save(note);
+    }
+
+    @PutMapping("/edit")
+    public Note update(@RequestBody Note note){
+        return noteManager.save(note);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id){
+        noteManager.delete(id);
+    }
+}

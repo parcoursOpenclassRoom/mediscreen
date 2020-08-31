@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/mediscreen-react-ui/mediscreen-react-ui.iml" filepath="$PROJECT_DIR$/mediscreen-react-ui/mediscreen-react-ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/note/note.iml" filepath="$PROJECT_DIR$/note/note.iml" />
       <module fileurl="file://$PROJECT_DIR$/patient/patient.iml" filepath="$PROJECT_DIR$/patient/patient.iml" />
     </modules>
   </component>
