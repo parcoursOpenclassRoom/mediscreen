@@ -23,7 +23,7 @@ public class PatientITTest {
         // Save
         patient = patientManager.save(patient);
         assertNotNull(patient.getId());
-        assertEquals(patient.getFirstName(), "TOTO", "TOTO");
+        assertEquals(patient.getFirstName(), "TITI", "TITI");
 
         // Update
         patient.setPhone("07983467");

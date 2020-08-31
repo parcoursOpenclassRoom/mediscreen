@@ -151,6 +151,9 @@ function LayoutApp({ children }) {
                 <List onClick={()=> history.push("/list-patient")} >
                   Liste Patient
                     </List>
+                <List onClick={()=> history.push("/list-note")} >
+                    Liste Note
+                </List>
                 <Divider />
             </Drawer>
             <main className={classes.content}>

@@ -7,6 +7,8 @@ import {
 import LayoutApp from "./layout.app";
 import HomePatient from "./patient/home.patient";
 import AddPatient from "./patient/add.patient"
+import NotePatient from "./note/home.note";
+import FormNote from "./note/form.note";
 const routes = {
     routes: [
         {
@@ -20,6 +22,18 @@ const routes = {
         {
             path: "/edit-patient/:id",
             component: AddPatient,
+        },
+        {
+            path: "/list-note",
+            component: NotePatient,
+        },
+        {
+            path: "/add-note",
+            component: FormNote,
+        },
+        {
+            path: "/edit-note/:id",
+            component: FormNote,
         }
     ],
 };
