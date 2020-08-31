@@ -14,6 +14,8 @@ public class PatientManagerImpl implements PatientManager {
 
     @Override
     public Patient save(Patient patient) {
+        if(patient.getId() == 0)
+            patient.setId(findTopByOrderByIdDesc() != null ? findTopByOrderByIdDesc().getId() + 1 : 1);
         return patientRepository.save(patient);
     }
 
@@ -30,5 +32,10 @@ public class PatientManagerImpl implements PatientManager {
     @Override
     public List<Patient> list() {
         return patientRepository.findAll();
+    }
+
+    @Override
+    public Patient findTopByOrderByIdDesc() {
+        return patientRepository.findTopByOrderByIdDesc();
     }
 }

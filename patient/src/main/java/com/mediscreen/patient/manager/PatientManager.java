@@ -33,4 +33,10 @@ public interface PatientManager {
      * @return
      */
     List<Patient> list();
+
+    /**
+     * get last record patient
+     * @return
+     */
+    Patient findTopByOrderByIdDesc();
 }
