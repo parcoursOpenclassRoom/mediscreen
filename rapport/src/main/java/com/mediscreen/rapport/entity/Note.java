@@ -5,6 +5,11 @@ public class Note {
     private String notes;
     private int idPatient;
 
+    public Note(String notes, int idPatient) {
+        this.notes = notes;
+        this.idPatient = idPatient;
+    }
+
     public Note() {
     }
 

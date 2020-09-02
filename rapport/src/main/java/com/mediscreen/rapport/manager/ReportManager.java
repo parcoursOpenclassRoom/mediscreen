@@ -3,7 +3,6 @@ package com.mediscreen.rapport.manager;
 import com.mediscreen.rapport.entity.Report;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Report Action Manager
@@ -45,7 +44,7 @@ public interface ReportManager {
      * get last record report
      * @return
      */
-    Map reportPatient(int idPatient);
+    Report reportPatient(int idPatient);
 
-    Map reportPatient(String familyName);
+    Report reportPatient(String familyName);
 }

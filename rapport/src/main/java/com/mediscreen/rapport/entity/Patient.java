@@ -5,7 +5,7 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class PatientReport {
+public class Patient {
     private int id;
     private String name;
     private String firstName;
@@ -13,11 +13,19 @@ public class PatientReport {
     private Date birthday;
     private String address;
     private String phone;
-    private String status;
 
-    public PatientReport() {
+    public Patient() {
     }
 
+    public Patient(int id, String name, String firstName, String sex, Date birthday, String address, String phone) {
+        this.id = id;
+        this.name = name;
+        this.firstName = firstName;
+        this.sex = sex;
+        this.birthday = birthday;
+        this.address = address;
+        this.phone = phone;
+    }
 
     public int getId() {
         return id;
@@ -75,13 +83,6 @@ public class PatientReport {
         this.phone = phone;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public int getAge(){
         LocalDate now = LocalDate.now();
@@ -94,16 +95,5 @@ public class PatientReport {
                 .toLocalDate();
     }
 
-    @Override
-    public String toString() {
-        return "PatientReport{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", sex='" + sex + '\'' +
-                ", birthday=" + birthday +
-                ", address='" + address + '\'' +
-                ", phone='" + phone + '\'' +
-                '}';
-    }
+
 }

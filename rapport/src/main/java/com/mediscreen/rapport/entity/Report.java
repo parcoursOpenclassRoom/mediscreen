@@ -1,18 +1,41 @@
 package com.mediscreen.rapport.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.Date;
 
 @Document
 public class Report {
     @Id
     private int id;
     private int idPatient;
-    private int age;
     private String risk;
-    private Date created;
+    private String description;
+    @Transient
+    private Patient patient;
+
+    public Report(){
+
+    }
+
+    public Report(int idPatient, String risk, String description, Patient patient) {
+        this.idPatient = idPatient;
+        this.risk = risk;
+        this.description = description;
+        this.patient = patient;
+    }
+
+    public Report(int idPatient, String risk, String description) {
+        this.idPatient = idPatient;
+        this.risk = risk;
+        this.description = description;
+    }
+    public Report(int id, int idPatient, String risk, String description) {
+        this.id = id;
+        this.idPatient = idPatient;
+        this.risk = risk;
+        this.description = description;
+    }
 
     public int getId() {
         return id;
@@ -30,14 +53,6 @@ public class Report {
         this.idPatient = idPatient;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     public String getRisk() {
         return risk;
     }
@@ -46,11 +61,19 @@ public class Report {
         this.risk = risk;
     }
 
-    public Date getCreated() {
-        return created;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 }

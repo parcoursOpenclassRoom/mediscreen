@@ -12,6 +12,10 @@ public class Trigger {
     private String libelle;
     private Date created;
 
+    public Trigger(String libelle) {
+        this.libelle = libelle;
+    }
+
     public Trigger() {
     }
 

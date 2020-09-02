@@ -1,7 +1,7 @@
 package com.mediscreen.rapport.manager;
 
 import com.mediscreen.rapport.entity.Note;
-import com.mediscreen.rapport.entity.PatientReport;
+import com.mediscreen.rapport.entity.Patient;
 import com.mediscreen.rapport.entity.Report;
 import com.mediscreen.rapport.entity.Trigger;
 import com.mediscreen.rapport.repository.NoteRepository;
@@ -10,9 +10,7 @@ import com.mediscreen.rapport.repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ReportManagerImpl implements ReportManager {
@@ -28,6 +26,8 @@ public class ReportManagerImpl implements ReportManager {
 
     @Override
     public Report save(Report report) {
+        if(report.getId() == 0)
+            report.setId(findTopByOrderByIdDesc() != null ? findTopByOrderByIdDesc().getId() + 1 : 1);
         return reportRepository.save(report);
     }
 
@@ -52,20 +52,19 @@ public class ReportManagerImpl implements ReportManager {
     }
 
     @Override
-    public Map reportPatient(int idPatient) {
-        PatientReport patientReport = patientRepository.findPatient(idPatient);
-        return report(patientReport);
+    public Report reportPatient(int idPatient) {
+        Patient patient = patientRepository.findPatient(idPatient);
+        return report(patient);
     }
 
     @Override
-    public Map reportPatient(String familyName) {
-        PatientReport patientReport = patientRepository.findPatientByName(familyName);
-        return report(patientReport);
+    public Report reportPatient(String familyName) {
+        Patient patient = patientRepository.findPatientByName(familyName);
+        return report(patient);
     }
 
-    private Map report(PatientReport patientReport){
-        Map result = new HashMap();
-        List<Note> notes = noteRepository.findNoteByPatient(patientReport.getId());
+    private Report report(Patient patient){
+        List<Note> notes = noteRepository.findNoteByPatient(patient.getId());
         List<Trigger> triggers = triggerManager.list();
         int trigger = 0;
 
@@ -75,12 +74,14 @@ public class ReportManagerImpl implements ReportManager {
                     trigger++;
             }
         }
-        String risk = getRisk(patientReport.getAge(), patientReport.getSex(), trigger);
-        String status = "Patient: "+ patientReport.getName() +" "+ patientReport.getFirstName() +" (age "+ patientReport.getAge() +") diabetes assessment is: "+ risk +"";
-        patientReport.setStatus(risk);
-        result.put("msg", status);
-        result.put("data", patientReport);
-        return result;
+        String risk = getRisk(patient.getAge(), patient.getSex(), trigger);
+        String desc = "Patient: "+ patient.getName() +" "+ patient.getFirstName() +" (age "+ patient.getAge() +") diabetes assessment is: "+ risk +"";
+        Report report = new Report(patient.getId(), risk, desc);
+        Report reportSave = save(report);
+        if(reportSave != null)
+            report = reportSave;
+        report.setPatient(patient);
+        return report;
     }
 
     private String getRisk(int age, String patSex, int trigger){
