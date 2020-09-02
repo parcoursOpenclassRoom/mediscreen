@@ -25,5 +25,10 @@ export function getPatient(id) {
     return axios.get(url);
 }
 
+export function reportPatient(id) {
+    const url = `${process.env.REACT_APP_API_REPORT}/assess/id?patId=${id}`;
+    return axios.post(url, {});
+}
+
 
 

@@ -9,8 +9,13 @@ import HomePatient from "./patient/home.patient";
 import AddPatient from "./patient/add.patient"
 import NotePatient from "./note/home.note";
 import FormNote from "./note/form.note";
+import FormReport from "./patient/form.report";
 const routes = {
     routes: [
+        {
+            path: "/report",
+            component: FormReport,
+        },
         {
             path: "/list-patient",
             component: HomePatient,

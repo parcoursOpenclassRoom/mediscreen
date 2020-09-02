@@ -11,4 +11,5 @@ public interface PatientRepository extends MongoRepository<Patient, Integer> {
     void delete(Patient patient);
     List findAll();
     Patient findTopByOrderByIdDesc();
+    Patient findTopByName(String name);
 }

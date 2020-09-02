@@ -6,12 +6,12 @@ export function listNote() {
 }
 
 export function saveNote(data) {
-    const url = `${process.env.REACT_APP_API_NOTE}/patHistory/add`;
+    const url = `${process.env.REACT_APP_API_NOTE}/patHistory`;
     return axios.post(url, data);
 }
 
 export function editNote(data) {
-    const url = `${process.env.REACT_APP_API_NOTE}/patHistory/edit`;
+    const url = `${process.env.REACT_APP_API_NOTE}/patHistory`;
     return axios.put(url, data);
 }
 

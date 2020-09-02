@@ -21,6 +21,16 @@ public class Patient {
     public Patient() {
     }
 
+    public Patient(String name, String firstName, String sex, Date birthday, String address, String phone) {
+        this.id = id;
+        this.name = name;
+        this.firstName = firstName;
+        this.sex = sex;
+        this.birthday = birthday;
+        this.address = address;
+        this.phone = phone;
+    }
+
     public Patient(int id, String name, String firstName, String sex, Date birthday, String address, String phone) {
         this.id = id;
         this.name = name;
@@ -101,5 +111,20 @@ public class Patient {
 
     public void setModified(Date modified) {
         this.modified = modified;
+    }
+
+    @Override
+    public String toString() {
+        return "Patient{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", sex='" + sex + '\'' +
+                ", birthday=" + birthday +
+                ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
+                ", created=" + created +
+                ", modified=" + modified +
+                '}';
     }
 }

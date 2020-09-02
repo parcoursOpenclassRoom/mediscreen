@@ -38,4 +38,9 @@ public class PatientManagerImpl implements PatientManager {
     public Patient findTopByOrderByIdDesc() {
         return patientRepository.findTopByOrderByIdDesc();
     }
+
+    @Override
+    public Patient findByName(String familyName) {
+        return patientRepository.findTopByName(familyName);
+    }
 }
