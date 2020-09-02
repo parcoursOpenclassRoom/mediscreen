@@ -1,42 +1,112 @@
-import React, { useContext, useEffect, useState } from "react";
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import React, { useContext, useEffect, useState, forwardRef } from "react";
 import {listNote, removeNote} from "./note.rest";
-import moment from "moment";
 import { useHistory} from "react-router-dom";
 import EditIcon from '@material-ui/icons/Edit';
 import Button from "@material-ui/core/Button";
 import DeleteIcon from '@material-ui/icons/Delete';
 
-const useStyles = makeStyles({
-    table: {
-        width: "60%",
-    },
-});
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Clear from '@material-ui/icons/Clear';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Search from '@material-ui/icons/Search';
+import MaterialTable from "material-table";
+import {listPatient} from "../patient/home.patient.rest";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+
+const tableIcons = {
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+};
+
 
 function NotePatient() {
-    const classes = useStyles();
-    const [list,setList] = useState([]);
+    let datas = [];
+    const [currentItem, setCurrentItem] = useState([]);
+    const [patients, setPatients] = useState([]);
     const [load,setLoad] = useState(true);
     let history = useHistory();
+    const [open, setOpen] = useState(false);
+
+    const handleClickOpen = (item) => {
+        setCurrentItem(item);
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const [state, setState] = useState({
+        columns: [
+            { title: 'Note', field: 'notes',
+                render: (rowData) =>
+                    rowData && (
+                        <div>
+                            {rowData.notes}
+                        </div>
+                    )
+            },
+            { title: 'Patient', field: 'birthday',
+                render: (rowData) =>
+                    rowData && (
+                        <div>
+                            {getPatient(rowData)}
+                        </div>
+                    )
+            },
+            {
+                title: "Actions",
+                field: "internal_action",
+                editable: false,
+                render: (rowData) =>
+                    rowData && (
+                        <div>
+                            <Button onClick={()=> edit(rowData) } color="primary">
+                                <EditIcon/>
+                            </Button>
+                            <Button onClick={()=> handleClickOpen(rowData) } color="primary">
+                                <DeleteIcon/>
+                            </Button>
+                        </div>
+                    )
+            }
+        ],
+        data: [],
+    });
+
+    const getPatient = (row) => {
+       const findPatient = datas.find((item) => item.id == row.idPatient );
+       return findPatient ? findPatient.name : null;
+    }
 
     useEffect(() => {
        if(load){
            setLoad(false);
-           loadList();
+           loadPatient();
        }
     });
 
-    const loadList = (data) => {
-        listNote(data)
+
+    const loadPatient = () => {
+        listPatient()
             .then((response) => {
-                setList(response.data);
+                setPatients(response.data);
+                datas = response.data;
+                loadList();
             })
             .catch((error) => {
             })
@@ -44,19 +114,24 @@ function NotePatient() {
             });
     };
 
-     function formatStandar(date) {
-        if (date != null) {
-            return moment(date).format("dddd Do MMMM YYYY");
-        }
-        return null;
-    }
+    const loadList = (data) => {
+        listNote(data)
+            .then((response) => {
+                setState({ ...state, ["data"]: response.data});
+            })
+            .catch((error) => {
+            })
+            .finally((response) => {
+            });
+    };
 
     const edit = (data) => {
         history.push(`/edit-note/${data.id}`);
     }
 
-    const remove = (data) => {
-        removeNote(data.id)
+    const remove = () => {
+        handleClose();
+        removeNote(currentItem.id)
             .then((response) => {
                 loadList();
             })
@@ -74,31 +149,33 @@ function NotePatient() {
                </Button>
                <br/>
            </div>
-            <TableContainer>
-                <Table className={classes.table} aria-label="simple table" component={Paper}>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Note</TableCell>
-                            <TableCell align="right">Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {list.map((row, i) => (
-                            <TableRow key={i}>
-                                <TableCell align="center">{row.notes}</TableCell>
-                                <TableCell align="right">
-                                    <Button onClick={()=> edit(row) } color="primary">
-                                        <EditIcon/>
-                                    </Button>
-                                    <Button onClick={()=> remove(row) } color="primary">
-                                        <DeleteIcon/>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Confirmation"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Voulez-vous vraiment supprimer l'élément ?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        NON
+                    </Button>
+                    <Button onClick={()=>remove()} color="primary" autoFocus>
+                        OUI
+                    </Button>
+                </DialogActions>
+            </Dialog>
+                <MaterialTable
+                    title="Liste des Notes Patient"
+                    columns={state.columns}
+                    data={state.data}
+                    icons={tableIcons}
+                />
         </div>
     );
 }

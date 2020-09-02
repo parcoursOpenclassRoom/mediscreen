@@ -1,12 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import MaterialTable from 'material-table';
 import {listPatient, removePatient} from "./home.patient.rest";
 import moment from "moment";
 import { useHistory} from "react-router-dom";
@@ -14,17 +8,90 @@ import EditIcon from '@material-ui/icons/Edit';
 import Button from "@material-ui/core/Button";
 import DeleteIcon from '@material-ui/icons/Delete';
 
-const useStyles = makeStyles({
-    table: {
-        minWidth: 650,
-    },
-});
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Clear from '@material-ui/icons/Clear';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Search from '@material-ui/icons/Search';
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
+
+const tableIcons = {
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+};
+
 
 function HomePatient() {
-    const classes = useStyles();
-    const [list,setList] = useState([]);
     const [load,setLoad] = useState(true);
+    const [currentItem, setCurrentItem] = useState([]);
+    const [open, setOpen] = useState(false);
     let history = useHistory();
+    const [state, setState] = useState({
+        columns: [
+            { title: 'Nom', field: 'name',
+                render: (rowData) =>
+                    rowData && (
+                        <div>
+                            {`${rowData.name} ${rowData.firstName}`}
+                        </div>
+                    )
+            },
+            { title: 'Naissance', field: 'birthday',
+                render: (rowData) =>
+                    rowData && (
+                        <div>
+                            {formatStandar(rowData.birthday)}
+                        </div>
+                    )
+            },
+            { title: 'Genre', field: 'sex' },
+            { title: 'Adresse', field: 'address'},
+            {
+                title: 'Téléphone',
+                field: 'phone'
+            },
+            {
+                title: "Actions",
+                field: "internal_action",
+                editable: false,
+                render: (rowData) =>
+                    rowData && (
+                       <div>
+                           <Button onClick={()=> edit(rowData) } color="primary">
+                               <EditIcon/>
+                           </Button>
+                           <Button onClick={()=> handleClickOpen(rowData) } color="primary">
+                               <DeleteIcon/>
+                           </Button>
+                       </div>
+                    )
+            }
+        ],
+        data: [],
+    });
+
+    const handleClickOpen = (item) => {
+        setCurrentItem(item);
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     useEffect(() => {
        if(load){
@@ -36,7 +103,8 @@ function HomePatient() {
     const loadList = (data) => {
         listPatient(data)
             .then((response) => {
-                setList(response.data);
+                setState({ ...state, ["data"]: response.data });
+                //setList(response.data);
             })
             .catch((error) => {
             })
@@ -55,8 +123,9 @@ function HomePatient() {
         history.push(`/edit-patient/${data.id}`);
     }
 
-    const remove = (data) => {
-        removePatient(data.id)
+    const remove = () => {
+        handleClose();
+        removePatient(currentItem.id)
             .then((response) => {
                 loadList();
             })
@@ -74,41 +143,33 @@ function HomePatient() {
                </Button>
                <br/>
            </div>
-            <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Nom</TableCell>
-                            <TableCell align="right">Naissance</TableCell>
-                            <TableCell align="right">Genre</TableCell>
-                            <TableCell align="right">Adresse</TableCell>
-                            <TableCell align="right">Téléphone</TableCell>
-                            <TableCell align="right">Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {list.map((row, i) => (
-                            <TableRow key={i}>
-                                <TableCell component="th" scope="row">
-                                    {`${row.name} ${row.firstName}`}
-                                </TableCell>
-                                <TableCell align="right">{formatStandar(row.birthday)}</TableCell>
-                                <TableCell align="right">{row.sex}</TableCell>
-                                <TableCell align="right">{row.address}</TableCell>
-                                <TableCell align="right">{row.phone}</TableCell>
-                                <TableCell align="right">
-                                    <Button onClick={()=> edit(row) } color="primary">
-                                        <EditIcon/>
-                                    </Button>
-                                    <Button onClick={()=> remove(row) } color="primary">
-                                        <DeleteIcon/>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Confirmation"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Voulez-vous vraiment supprimer l'élément ?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        NON
+                    </Button>
+                    <Button onClick={()=>remove()} color="primary" autoFocus>
+                        OUI
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <MaterialTable
+                title="Liste des Patients"
+                columns={state.columns}
+                data={state.data}
+                icons={tableIcons}
+            />
         </div>
     );
 }

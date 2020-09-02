@@ -17,6 +17,11 @@ public class Note {
     public Note() {
     }
 
+    public Note(String notes, int idPatient) {
+        this.notes = notes;
+        this.idPatient = idPatient;
+    }
+
     public Note(int id, String notes, int idPatient) {
         this.id = id;
         this.notes = notes;

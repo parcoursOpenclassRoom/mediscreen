@@ -39,4 +39,6 @@ public interface PatientManager {
      * @return
      */
     Patient findTopByOrderByIdDesc();
+
+    Patient findByName(String familyName);
 }

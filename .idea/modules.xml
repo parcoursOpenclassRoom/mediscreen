@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/mediscreen-react-ui/mediscreen-react-ui.iml" filepath="$PROJECT_DIR$/mediscreen-react-ui/mediscreen-react-ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/note/note.iml" filepath="$PROJECT_DIR$/note/note.iml" />
       <module fileurl="file://$PROJECT_DIR$/patient/patient.iml" filepath="$PROJECT_DIR$/patient/patient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rapport/rapport.iml" filepath="$PROJECT_DIR$/rapport/rapport.iml" />
     </modules>
   </component>
 </project>

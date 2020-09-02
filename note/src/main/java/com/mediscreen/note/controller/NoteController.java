@@ -28,12 +28,18 @@ public class NoteController {
         return noteManager.listByPatient(id);
     }
 
-    @PostMapping("/add/{id}")
+    @PostMapping
     public Note create(@RequestBody Note note){
         return noteManager.save(note);
     }
 
-    @PutMapping("/edit")
+    @PostMapping("/add")
+    public Note create(@RequestParam String patId){
+        String[] parts = patId.split("¬e=");
+        return noteManager.save(new Note(parts[1], Integer.parseInt(parts[0]) ));
+    }
+
+    @PutMapping
     public Note update(@RequestBody Note note){
         return noteManager.save(note);
     }
