@@ -18,8 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,7 +47,7 @@ public class NoteE2ETest {
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson=ow.writeValueAsString(note);
-        MvcResult result = mockMvc.perform(post(createURLWithPort(uri + "add")).contentType(APPLICATION_JSON)
+        MvcResult result = mockMvc.perform(post(createURLWithPort(uri )).contentType(APPLICATION_JSON)
                 .content(requestJson))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
@@ -58,6 +59,19 @@ public class NoteE2ETest {
     }
 
     @Test
+    public void addTest() throws Exception {
+        String req = "/add?patId=1¬e=Patient: TestNone Practitioner's notes/recommendations: Patient states that they are 'feeling terrific' Weight at or below recommended level";
+        MvcResult result = mockMvc.perform(post(createURLWithPort(uri+req)).contentType(APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = result.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(content);
+        assertNotNull(jsonObject);
+        assertEquals(1, jsonObject.get("idPatient"));
+    }
+
+    @Test
     @Order(2)
     public void updateTest() throws Exception {
         Note note = noteManager.find(1);
@@ -66,7 +80,7 @@ public class NoteE2ETest {
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String requestJson=ow.writeValueAsString(note);
-        MvcResult result = mockMvc.perform(put(createURLWithPort(uri + "edit")).contentType(APPLICATION_JSON)
+        MvcResult result = mockMvc.perform(put(createURLWithPort(uri )).contentType(APPLICATION_JSON)
                 .content(requestJson))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
@@ -76,6 +90,19 @@ public class NoteE2ETest {
         assertNotNull(jsonObject);
         assertEquals(note.getIdPatient(), jsonObject.get("idPatient"));
         assertEquals(note.getId(), jsonObject.get("id"));
+    }
+
+    @Test
+    @Order(3)
+    public void findAllTest() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        MvcResult result = mockMvc.perform(get(createURLWithPort(uri)).contentType(APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = result.getResponse().getContentAsString();
+        List<Note> notes = mapper.readValue(content, List.class);
+        assertTrue(notes.size() > 0);
     }
 
     @Test

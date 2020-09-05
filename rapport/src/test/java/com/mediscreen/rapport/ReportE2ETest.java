@@ -35,7 +35,7 @@ public class ReportE2ETest {
 
     @Test
     public void ReportByIdTest() throws Exception {
-        MvcResult result = mockMvc.perform(post(createURLWithPort(uri + "id?patId=3")).contentType(APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(post(createURLWithPort(uri + "id?patId=2")).contentType(APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andReturn();
