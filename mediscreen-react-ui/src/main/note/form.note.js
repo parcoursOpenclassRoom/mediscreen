@@ -49,6 +49,7 @@ function FormNote() {
         listPatient()
             .then((response) => {
                 setPatients(response.data);
+                setPatient(response.data.length > 0 ? response.data[0].id : 1 );
             })
             .catch((error) => {
             })

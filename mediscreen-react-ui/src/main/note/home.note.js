@@ -90,7 +90,7 @@ function NotePatient() {
 
     const getPatient = (row) => {
        const findPatient = datas.find((item) => item.id == row.idPatient );
-       return findPatient ? findPatient.name : null;
+       return findPatient ? findPatient.name + " " + findPatient.firstName : null;
     }
 
     useEffect(() => {

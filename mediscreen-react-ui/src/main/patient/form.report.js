@@ -44,6 +44,7 @@ function FormReport() {
         listPatient()
             .then((response) => {
                 setPatients(response.data);
+                setPatient(response.data.length > 0 ? response.data[0].id : 1 );
             })
             .catch((error) => {
             })
@@ -101,8 +102,8 @@ function FormReport() {
                             </Grid>
                             <Grid item xs={5}>
                                 {report != null && (
-                                    <Alert variant="filled" severity={alerts[report.data.status]}>
-                                        {report.msg}
+                                    <Alert variant="filled" severity={alerts[report.risk]}>
+                                        {report.description}
                                     </Alert>
                                 ) }
 
